@@ -1,13 +1,16 @@
 /*****************************************************/
 /*       Identifying structure of the function       */
 /*****************************************************/
-//soham first addition//
-//soham second//
+
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <sstream>
 
-//git added//
+
+
+
+
 /**
 datatype input corresponds to a single input parameter with a name and datatype.
 */
@@ -39,18 +42,68 @@ std::string getInputType (input* MyInput){
 	return MyInput->InputType;
 }
 
-//For each condition of if or else
+
+
+
+
+
+
 typedef struct ConditionBox{
 	std::string condition;
 	bool IsRecursiveCall;
 	std::string* Content;
 	int ContentLength;
+	ConditionBox* subConditionBoxList;
+	int NumOfSubConditions;
 } ConditionBox; 
 
+void initialiseConditionBox(ConditionBox* NewConditionBox){
+	NewConditionBox->condition = "f(arg) == 0";
+	NewConditionBox->Content = new std::string[20];
+	NewConditionBox->ContentLength = 0;
+	NewConditionBox->IsRecursiveCall = 0;
+	NewConditionBox->subConditionBoxList = new ConditionBox[5];
+	NewConditionBox->NumOfSubConditions = 0;
+}
 
-//Contains the mai
-typedef struct structure 
-{
+void setCondition (ConditionBox* MyConditionBox, std::string Condition){
+	MyConditionBox->condition = Condition;
+}
+
+std::string getCondition (ConditionBox* MyConditionBox){
+	return MyConditionBox->condition;
+}
+
+void setContent (ConditionBox* MyConditionBox, std::string* Content, int ContentLength){
+	if (ContentLength>20){
+		std::cout<<"Content length exceeded"<<std::endl;
+		return;
+	}
+	for (int i=0; i<ContentLength; i++){
+		MyConditionBox->Content[i] = Content[i];
+	}
+	MyConditionBox->ContentLength = ContentLength;
+}
+
+int getContentLength (ConditionBox* MyConditionBox){
+	return MyConditionBox->ContentLength;
+}
+
+void setIsRecursiveCall (ConditionBox* MyConditionBox, bool IsRecursiveCall){
+	MyConditionBox->IsRecursiveCall = IsRecursiveCall;
+}
+
+bool getIsRecursiveCall (ConditionBox* MyConditionBox){
+	return MyConditionBox->IsRecursiveCall;
+} 
+
+
+
+
+
+
+
+typedef struct structure {
 	std::string FunctionName;
 	int NumOfLines;	
 
@@ -80,6 +133,14 @@ void initialiseStructure (structure* NewStructure){
 
 }
 
+void setOutputType (structure* MyStructure, std::string OutputType){
+	MyStructure->OutputType = OutputType;
+}
+
+std::string getOutputType (structure* MyStructure){
+	return MyStructure->OutputType;
+}
+
 void setFunctionName (structure* MyStructure, std::string name){
 	MyStructure->FunctionName = name;
 }
@@ -106,6 +167,8 @@ void setInputList (structure* MyStructure, input* InputList, int NumOfInputs){
 		std::string TempInputType = getInputType(&InputList[i]);
 		setInputName (&(MyStructure->InputList[i]),TempInputName);
 		setInputType (&(MyStructure->InputList[i]),TempInputType);
+		std::cout<<"InputName "<<i<<":"<<getInputName(&(MyStructure->InputList[i]))<<std::endl;
+		std::cout<<"InputType "<<i<<":"<<getInputType(&(MyStructure->InputList[i]))<<std::endl;
 	}
 	MyStructure->NumOfInputs = NumOfInputs;
 }
@@ -116,6 +179,34 @@ int getNumOfInputs (structure* MyStructure){
 }
 
 void getFirstLineInfo (std::string FirstLine, structure* MyStructure){
+	std::string OutputType = "";
+	std::string FunctionName = "";
+	input* InputList = new input[10];
+	int NumOfInputs = 0;
+	
+	size_t SpacePosition = 0;
+	std::string space = " ";
+	SpacePosition = FirstLine.find(space);
+	OutputType = FirstLine.substr(0,SpacePosition);
+	
+	/*
+	FirstLine.erase(0,SpacePosition+1);
+	std::cout<<"Remaining Line: "<<FirstLine<<std::endl;
+	int iterator = 0;
+	while ((FirstLine[iterator]==" ")&&(iterator<FirstLine.length())){
+		std::cout<<"Space\t";
+		iterator++;
+	}
+	while (((FirstLine[iterator]!="(")||(FirstLine[iterator]!=" "))&&(iterator<FirstLine.length)){
+			
+	}
+	*/
+	
+	
+	setOutputType (MyStructure, OutputType);
+	std::cout<<"Output Type:"<<getOutputType (MyStructure)<<std::endl;
+	setFunctionName (MyStructure,FunctionName);
+	setInputList (MyStructure, InputList, NumOfInputs);
 	
 }
 
@@ -139,11 +230,12 @@ int main (){
    		int LineCounter = 0;
    		while (recursion.good()){
    			std::string templine;
-   			getline (recursion,templine);	
-			std::cout<<templine<<std::endl;
+   			getline (recursion,templine);
+			RecFunction[LineCounter] =  templine;  	
+			std::cout<<RecFunction[LineCounter]<<std::endl;
 			LineCounter++;
 		}
-	   RecFunctionLength = LineCounter;
+	    RecFunctionLength = LineCounter;
 		recursion.close();
    	}
    	else{
@@ -169,8 +261,11 @@ int main (){
 	setInputName (NewInput,"Soham");
 	std::cout<<"Input Name:"<<getInputName (NewInput)<<std::endl;
 	*/
+	
+	
 
 	/*Test For structure*/
+	
 	input* NewInput= new input[1];
 	initialiseInput (NewInput);
 	setInputName (&(NewInput[0]),"Soham");
@@ -181,10 +276,43 @@ int main (){
 	structure Structure;
 	initialiseStructure(&Structure);
 	std::cout<<"Structure Initialised"<<std::endl;
-	/*
-	std::cout<<getFunctionName(&Structure)<<std::endl;
+
+	//std::cout<<getFunctionName(&Structure)<<std::endl;
 	std::cout<<"Number of lines:"<<getNumOfLines(&Structure)<<std::endl;
+	/*
+	std::string TestFunctionName = "TestFunctionName";
+	setFunctionName (&Structure,TestFunctionName);
+	std::cout<<getFunctionName(&Structure)<<std::endl;
+	input* TestInputList = new input[10];
+	int NumOfInputs = 2;
+	for (int i=0; i<NumOfInputs; i++){
+		std::stringstream convert;
+		convert<<i;
+		std::string tempInputName = "Input"+convert.str();
+		std::string tempInputType = "Type"+ convert.str();
+		setInputName (&(TestInputList[i]),tempInputName);
+		setInputType (&(TestInputList[i]),tempInputType);
+	}
+	setInputList(&Structure,TestInputList,NumOfInputs);
+	std::cout<<"NumOfInputs:"<<getNumOfInputs(&Structure)<<std::endl;
 	*/
+	//Testing getFirstLineInfo
+	
+	std::string TestFirstLine = RecFunction[0];
+	getFirstLineInfo (TestFirstLine,&Structure);
+	
+	
+	
+	
+	
 	
 	return 0;
 }
+
+
+
+
+
+
+
+
