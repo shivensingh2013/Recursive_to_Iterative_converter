@@ -6,7 +6,7 @@
 #include <fstream>
 #include <string>
 #include <sstream>
-
+using namespace std;
 
 
 
@@ -116,8 +116,6 @@ typedef struct structure {
     int NumOfConditions;
 }structure; 
 
-
-
 void initialiseStructure (structure* NewStructure){
 	NewStructure->FunctionName = "Fbegin";
 	NewStructure->NumOfLines = 0;
@@ -179,35 +177,57 @@ int getNumOfInputs (structure* MyStructure){
 }
 
 void getFirstLineInfo (std::string FirstLine, structure* MyStructure){
+	
+	
 	std::string OutputType = "";
 	std::string FunctionName = "";
+	std::string Arguments="";
 	input* InputList = new input[10];
 	int NumOfInputs = 0;
 	
 	size_t SpacePosition = 0;
-	std::string space = " ";
+	string space = " ";
+	string curly="{";
+	string buffer="";
 	SpacePosition = FirstLine.find(space);
 	OutputType = FirstLine.substr(0,SpacePosition);
-	
-	/*
-	FirstLine.erase(0,SpacePosition+1);
-	std::cout<<"Remaining Line: "<<FirstLine<<std::endl;
-	int iterator = 0;
-	while ((FirstLine[iterator]==" ")&&(iterator<FirstLine.length())){
-		std::cout<<"Space\t";
-		iterator++;
-	}
-	while (((FirstLine[iterator]!="(")||(FirstLine[iterator]!=" "))&&(iterator<FirstLine.length)){
+	FirstLine=FirstLine.substr(SpacePosition+1,FirstLine.length());
+	SpacePosition = FirstLine.find(space);
+	FunctionName=FirstLine.substr(0,SpacePosition);
+	FirstLine=FirstLine.substr(SpacePosition+1,FirstLine.length());
+	SpacePosition = FirstLine.find(curly);
+	Arguments=FirstLine.substr(0,SpacePosition);
+	if(Arguments[0]=='('&& Arguments[Arguments.length()-1]==')')
+	{
+		for(int i=1;i<Arguments.length();i++)
+		{
 			
+			if(Arguments[i]==' ')
+			{
+			setInputType(&(InputList[NumOfInputs]),buffer);
+			buffer="";
+			}
+			else if(Arguments[i]==')' ||Arguments[i]==',')
+			{
+			setInputName(&(InputList[NumOfInputs]),buffer);
+			buffer="";
+			NumOfInputs++;
+			}
+			else
+			{
+				buffer=buffer+Arguments[i];
+			}
+		}
 	}
-	*/
-	
 	
 	setOutputType (MyStructure, OutputType);
-	std::cout<<"Output Type:"<<getOutputType (MyStructure)<<std::endl;
 	setFunctionName (MyStructure,FunctionName);
 	setInputList (MyStructure, InputList, NumOfInputs);
 	
+	
+	
+
+
 }
 
 
@@ -296,6 +316,7 @@ int main (){
 	setInputList(&Structure,TestInputList,NumOfInputs);
 	std::cout<<"NumOfInputs:"<<getNumOfInputs(&Structure)<<std::endl;
 	*/
+	
 	//Testing getFirstLineInfo
 	
 	std::string TestFirstLine = RecFunction[0];

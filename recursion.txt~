@@ -1,4 +1,4 @@
-int factorial (int n){
+int factorial (int n,int b,string hhs){
 	if (n==0){
 		return 1;
 	}
