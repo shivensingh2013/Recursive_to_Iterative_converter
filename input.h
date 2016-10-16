@@ -36,4 +36,15 @@ std::string getInputType (input* MyInput){
 }
 
 
+	/*Test For input datatype*/
+	/*
+	input* NewInput= new input;
+	initialiseInput (NewInput);
+	
+	std::cout<<"Input Name:"<<getInputName (NewInput)<<std::endl;
+	setInputName (NewInput,"Soham");
+	std::cout<<"Input Name:"<<getInputName (NewInput)<<std::endl;
+	*/
+	
 
+	
